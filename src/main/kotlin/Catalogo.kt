@@ -43,4 +43,8 @@ class Catalogo: ICatalogo{
 
         return elementosDisponibles
     }
+
+    fun devolverCatalogo(): List<ElementoBiblioteca> {
+        return elementosCatalogo
+    }
 }

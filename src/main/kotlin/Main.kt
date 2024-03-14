@@ -30,3 +30,11 @@ fun main() {
     //Pero puedo ver su id mediante el uso de funciones que retornan dichos valores
     println(usuario1.obtenerId())
 }
+
+// Filtrar por título
+val elementosFiltrados = catalogo.filtrarPorCriterio { it.titulo.contains("El señor") }
+println(elementosFiltrados) // Output: [Libro@xxxxxx]
+
+// Filtrar por tipo de elemento
+val libros = catalogo.filtrarPorCriterio { it is Libro }
+println(libros) // Output: [Libro@xxxxxx, Libro@xxxxxx]

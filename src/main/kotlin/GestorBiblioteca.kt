@@ -4,18 +4,21 @@ import java.util.*
 
 /**
  * Clase que gestiona las operaciones relacionadas con la biblioteca.
- * @property catalogoElementos El catálogo de libros de la biblioteca.
  * @property gestorPrestamos El registro de préstamos de libros.
+ * @property gestorElementos El catálogo de libros de la biblioteca.
  */
-class GestorBiblioteca(private val gestorPrestamos: IGestorPrestamos, private val catalogoElementos: ICatalogo) {
+class GestorBiblioteca<T : ElementoBiblioteca>(
+    private val gestorPrestamos: IGestorPrestamos,
+    private val gestorElementos: GestorElementos<T>
+) {
 
     /**
      * Agrega un libro al catálogo de la biblioteca.
      * @param elemento El elemento que se va a agregar.
      * @return Un mensaje indicando que el libro se ha agregado correctamente.
      */
-    fun agregarLibro(elemento: ElementoBiblioteca): String {
-        catalogoElementos.agregar(elemento)
+    fun agregarLibro(elemento: T): String {
+        gestorElementos.agregarElemento(elemento)
         return "Se ha agregado el libro ${elemento.obtenerTitulo()}."
     }
 
@@ -27,18 +30,18 @@ class GestorBiblioteca(private val gestorPrestamos: IGestorPrestamos, private va
      */
     fun prestar(elementoId: UUID, usuario: Usuario): String {
         val elemento = obtenerElemento(elementoId)
-        if (elemento != null && elemento.obtenerEstado() == EstadoElemento.DISPONIBLE.desc && elemento is Prestable) {
+        return if (elemento != null && elemento.obtenerEstado() == EstadoElemento.DISPONIBLE.desc && elemento is Prestable) {
             elemento.prestar()
             usuario.agregarElemento(elemento)
             registrarPrestamo(elementoId, usuario)
-            return "${usuario.obtenerNombre()} ha tomado prestado el libro ${elemento.obtenerTitulo()}."
+            "${usuario.obtenerNombre()} ha tomado prestado el libro ${elemento.obtenerTitulo()}."
         } else {
-            return "${usuario.obtenerNombre()} no ha tomado prestado el libro ${elemento?.obtenerTitulo()}."
+            "${usuario.obtenerNombre()} no ha tomado prestado el libro ${elemento?.obtenerTitulo()}."
         }
     }
 
-    private fun obtenerElemento(elementoId: UUID): ElementoBiblioteca? {
-        return catalogoElementos.buscarPorId(elementoId)
+    private fun obtenerElemento(elementoId: UUID): T? {
+        return gestorElementos.filtrarPorCriterio(gestorElementos.elementos.)
     }
 
     private fun registrarPrestamo(elementoId: UUID, usuario: Usuario) {
@@ -53,13 +56,13 @@ class GestorBiblioteca(private val gestorPrestamos: IGestorPrestamos, private va
      */
     fun devolver(elementoId: UUID, usuario: Usuario): String {
         val elemento = obtenerElemento(elementoId)
-        if (elemento != null && elemento.obtenerEstado() == EstadoElemento.PRESTADO.desc && elemento is Prestable) {
+        return if (elemento != null && elemento.obtenerEstado() == EstadoElemento.PRESTADO.desc && elemento is Prestable) {
             elemento.devolver()
             usuario.eliminarElemento(elemento)
             registrarDevolucion(elementoId, usuario)
-            return("${usuario.obtenerNombre()} ha devuelto el libro ${catalogoElementos.buscarPorId(elementoId)!!.obtenerTitulo()}.")
+            "${usuario.obtenerNombre()} ha devuelto el libro ${gestorElementos.buscarPorId(elementoId)!!.obtenerTitulo()}."
         } else {
-            return("${usuario.obtenerNombre()} no tenía ${catalogoElementos.buscarPorId(elementoId)!!.obtenerTitulo()} entre sus libros prestados.")
+            "${usuario.obtenerNombre()} no tenía ${gestorElementos.buscarPorId(elementoId)!!.obtenerTitulo()} entre sus libros prestados."
         }
     }
 
@@ -71,28 +74,24 @@ class GestorBiblioteca(private val gestorPrestamos: IGestorPrestamos, private va
      * Lista todos los libros disponibles en la biblioteca.
      * @return Una lista de libros disponibles.
      */
-    fun listarLibrosDisponibles(): List<ElementoBiblioteca> {
+    fun listarLibrosDisponibles(): List<T> {
 
-        return catalogoElementos.listarDisponibles()
+        return gestorElementos.listarDisponibles()
     }
 
     /**
-     * Lista todos prestamos realizados para un libro dada su Id.
-     * @return Una lista de prestamos.
+     * Lista todos los préstamos realizados para un libro dado su Id.
+     * @return Una lista de préstamos.
      */
     fun consultarHistorialPrestamoLibro(elementoId: UUID): MutableList<Prestamo> {
-        val historialPrestamosLibro = gestorPrestamos.consultarHistorialElemento(elementoId)
-
-        return historialPrestamosLibro
+        return gestorPrestamos.consultarHistorialElemento(elementoId)
     }
 
     /**
-     * Lista todos prestamos realizados para un [Usuario].
-     * @return Una lista de prestamos.
+     * Lista todos los préstamos realizados para un [Usuario].
+     * @return Una lista de préstamos.
      */
     fun consultarHistorialPrestamoUsuario(usuario: Usuario): MutableList<Prestamo> {
-        val historialPrestamosUsuario = gestorPrestamos.consultarHistorialUsuario(usuario)
-
-        return historialPrestamosUsuario
+        return gestorPrestamos.consultarHistorialUsuario(usuario)
     }
 }
