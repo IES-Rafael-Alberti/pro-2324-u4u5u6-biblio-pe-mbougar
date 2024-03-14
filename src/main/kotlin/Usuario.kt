@@ -6,34 +6,34 @@ import java.util.*
  * Data class que representa un usuario de la biblioteca.
  * @property id El identificador único del usuario. Por defecto se genera utilizando la utilidad [UtilidadesBiblioteca.generarIdentificadorUnico].
  * @property nombre El nombre del usuario.
- * @property librosPrestados La lista de libros que el usuario tiene prestados. Por defecto es una lista vacía.
+ * @property elementosPrestados La lista de elementos que el usuario tiene prestados. Por defecto es una lista vacía.
  */
 data class Usuario(
     private val id: UUID = UtilidadesBiblioteca.generarIdentificadorUnico(),
     private val nombre: String,
-    private val librosPrestados: MutableList<Libro> = mutableListOf()
+    private val elementosPrestados: MutableList<ElementoBiblioteca> = mutableListOf()
 ) {
     fun obtenerId() = id
 
     fun obtenerNombre() = nombre
 
-    fun agregarLibro(libro: Libro) {
-        librosPrestados.add(libro)
+    fun agregarElemento(elemento: ElementoBiblioteca) {
+        elementosPrestados.add(elemento)
     }
 
-    fun eliminarLibro(libro: Libro) {
-        librosPrestados.remove(libro)
+    fun eliminarElemento(elemento: ElementoBiblioteca) {
+        elementosPrestados.remove(elemento)
     }
 
-    fun buscarLibroPrestadoPorId(libroId: UUID): Libro? {
-        val libro = librosPrestados.find { libro -> libro.obtnerId() == libroId }
-        return libro
+    fun buscarElementoPrestadoPorId(elementoId: UUID): ElementoBiblioteca? {
+        val elemento = elementosPrestados.find { elemento -> elemento.obtnerId() == elementoId }
+        return elemento
     }
 
-    fun listarLibrosPrestados(): List<Libro> {
-        val librosPrestados: MutableList<Libro> = mutableListOf()
-        this.librosPrestados.forEach { libro -> librosPrestados.add(libro) }
+    fun listarElementosPrestados(): List<ElementoBiblioteca> {
+        val elementosPrestados: MutableList<ElementoBiblioteca> = mutableListOf()
+        this.elementosPrestados.forEach { elemento -> elementosPrestados.add(elemento) }
 
-        return librosPrestados
+        return elementosPrestados
     }
 }

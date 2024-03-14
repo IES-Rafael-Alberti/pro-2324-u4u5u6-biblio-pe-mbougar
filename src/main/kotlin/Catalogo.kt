@@ -4,42 +4,42 @@ import java.util.*
 /**
  * Clase que representa el catálogo de libros de la biblioteca.
  */
-class Catalogo{
-    private val elementosCatalogo: MutableList<Libro> = mutableListOf()
+class Catalogo: ICatalogo{
+    private val elementosCatalogo: MutableList<ElementoBiblioteca> = mutableListOf()
 
     /**
      * Agrega un libro al catálogo.
-     * @param libro El libro que se va a agregar.
+     * @param elemento El libro que se va a agregar.
      */
-    fun agregar(libro: Libro) {
-        elementosCatalogo.add(libro)
+    override fun agregar(elemento: ElementoBiblioteca) {
+        elementosCatalogo.add(elemento)
     }
 
     /**
-     * Elimina un libro del catálogo dado su ID.
-     * @param id El ID del libro que se va a eliminar.
+     * Elimina un elemento del catálogo dado su ID.
+     * @param id El ID del elemento que se va a eliminar.
      */
-    fun eliminar(id: UUID) {
+    override fun eliminar(id: UUID) {
         elementosCatalogo.forEach { elemento -> if (elemento.obtnerId() == id) elementosCatalogo.remove(elemento) }
     }
 
     /**
-     * Busca un libro en el catálogo dado su ID.
-     * @param id El ID del libro que se va a buscar.
-     * @return El libro encontrado, o null si no se encuentra.
+     * Busca un elemento en el catálogo dado su ID.
+     * @param id El ID del elemento que se va a buscar.
+     * @return El elemento encontrado, o null si no se encuentra.
      */
-    fun buscarPorId(id: UUID): Libro? {
+    override fun buscarPorId(id: UUID): ElementoBiblioteca? {
         return elementosCatalogo.find { it.obtnerId() == id }
     }
 
     /**
-     * Lista todos los libros disponibles en el catálogo.
-     * @return Una lista de libros disponibles.
+     * Lista todos los elementos disponibles en el catálogo.
+     * @return Una lista de elementos disponibles.
      */
-    fun listarDisponibles(): List<Libro> {
-        val librosDisponibles: MutableList<Libro> = mutableListOf()
-        elementosCatalogo.forEach { libro -> if (libro.obtenerEstadoLibro() == EstadoLibro.DISPONIBLE.desc) librosDisponibles.add(libro) }
+    override fun listarDisponibles(): List<ElementoBiblioteca> {
+        val elementosDisponibles: MutableList<ElementoBiblioteca> = mutableListOf()
+        elementosCatalogo.forEach { elemento -> if (elemento.obtenerEstado() == EstadoElemento.DISPONIBLE.desc) elementosDisponibles.add(elemento) }
 
-        return librosDisponibles
+        return elementosDisponibles
     }
 }
